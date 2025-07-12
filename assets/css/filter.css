@@ -1,0 +1,142 @@
+/* Conteneur principal */
+.filter-container {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Ligne de filtres */
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* Éléments de formulaire */
+.filter-form select,
+.filter-form input[type="text"],
+.filter-form input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.filter-form input[type="text"] {
+    flex-grow: 1;
+    max-width: 300px;
+}
+
+/* Boutons */
+.btn-filter {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-reset {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Tableau */
+.dossier-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.dossier-table th, .dossier-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.dossier-table th {
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0;
+}
+
+/* Badges de statut */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.status-en_cours {
+    background-color: #f39c12;
+    color: white;
+}
+
+.status-valide {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.status-rejete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.status-archive {
+    background-color: #95a5a6;
+    color: white;
+}
+
+/* Priorités */
+tr.priority-high {
+    background-color: #ffebee;
+}
+
+tr.priority-medium {
+    background-color: #fff8e1;
+}
+
+/* Échéances */
+.deadline-expired {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.deadline-urgent {
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.deadline-warning {
+    color: #f1c40f;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 5px;
+}
+
+.pagination a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #3498db;
+}
+
+.pagination a.active {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+}

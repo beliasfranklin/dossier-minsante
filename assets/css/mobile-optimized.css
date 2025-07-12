@@ -1,0 +1,400 @@
+/* ===========================================
+   OPTIMISATIONS MOBILE AVANCÉES - MINSANTE
+   =========================================== */
+
+/* Variables CSS pour la responsivité */
+:root {
+    --mobile-breakpoint: 768px;
+    --tablet-breakpoint: 992px;
+    --mobile-padding: 15px;
+    --mobile-font-size: 14px;
+    --mobile-header-height: 60px;
+}
+
+/* Optimisations générales pour mobile */
+@media (max-width: 767px) {
+    body {
+        font-size: var(--mobile-font-size);
+        line-height: 1.4;
+    }
+    
+    .container-fluid {
+        padding: 0 var(--mobile-padding);
+    }
+    
+    /* Header mobile optimisé */
+    .navbar {
+        min-height: var(--mobile-header-height);
+        padding: 0.5rem var(--mobile-padding);
+    }
+    
+    .navbar-brand {
+        font-size: 1.1rem;
+        padding: 0.25rem 0;
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    /* Menu hamburger amélioré */
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .navbar-collapse {
+        margin-top: 0.5rem;
+        background: rgba(52, 73, 94, 0.95);
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Cartes dashboard responsive */
+@media (max-width: 767px) {
+    .dashboard-card {
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .card-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .card-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-number {
+        font-size: 1.5rem !important;
+        font-weight: 600;
+    }
+    
+    .dashboard-icon {
+        font-size: 1.2rem;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Tables responsive améliorées */
+@media (max-width: 767px) {
+    .table-responsive {
+        border: none;
+        margin-bottom: 0;
+    }
+    
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    /* Mode liste pour tables complexes */
+    .table-mobile-list {
+        display: block;
+    }
+    
+    .table-mobile-list thead {
+        display: none;
+    }
+    
+    .table-mobile-list tbody,
+    .table-mobile-list tr,
+    .table-mobile-list td {
+        display: block;
+        width: 100%;
+    }
+    
+    .table-mobile-list tr {
+        border: 1px solid #ddd;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        background: #fff;
+    }
+    
+    .table-mobile-list td {
+        text-align: left !important;
+        border: none;
+        padding: 0.25rem 0;
+    }
+    
+    .table-mobile-list td:before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        color: #495057;
+    }
+}
+
+/* Formulaires mobile */
+@media (max-width: 767px) {
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control,
+    .form-select {
+        font-size: 16px; /* Évite le zoom sur iOS */
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group-mobile .btn {
+        width: auto;
+        margin: 0 0.25rem 0.5rem 0;
+    }
+    
+    /* Labels plus visibles */
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.25rem;
+    }
+}
+
+/* Modales mobile */
+@media (max-width: 767px) {
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: none;
+        width: calc(100% - 1rem);
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+    
+    .modal-header {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .modal-body {
+        padding: 1rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .modal-footer {
+        padding: 1rem;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .modal-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* Navigation breadcrumb mobile */
+@media (max-width: 767px) {
+    .breadcrumb {
+        background: none;
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .breadcrumb-item {
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* Alertes et notifications mobile */
+@media (max-width: 767px) {
+    .alert {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border-radius: 0.25rem;
+        font-size: 0.9rem;
+    }
+    
+    .alert-dismissible .btn-close {
+        padding: 0.5rem;
+    }
+}
+
+/* Pagination mobile */
+@media (max-width: 767px) {
+    .pagination {
+        justify-content: center;
+        margin: 1rem 0;
+    }
+    
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .pagination-sm .page-link {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* DataTables mobile personnalisé */
+@media (max-width: 767px) {
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_filter {
+        margin-bottom: 1rem;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 0.5rem;
+    }
+    
+    .dataTables_wrapper .dataTables_info,
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: center;
+        margin-top: 1rem;
+    }
+}
+
+/* Sidebar mobile si présent */
+@media (max-width: 767px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 280px;
+        height: 100vh;
+        background: #34495e;
+        transition: left 0.3s ease;
+        z-index: 1050;
+        padding-top: var(--mobile-header-height);
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+        display: none;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+}
+
+/* Touches et interactions mobile */
+@media (max-width: 767px) {
+    /* Zone de touch plus grande pour les liens */
+    .btn,
+    .nav-link,
+    .dropdown-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Éviter la sélection accidentelle */
+    .card-header,
+    .table th {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Améliorer les zones de clic */
+    .clickable {
+        cursor: pointer;
+        -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    }
+}
+
+/* Animations mobile optimisées */
+@media (max-width: 767px) {
+    .fade-in-mobile {
+        animation: fadeInMobile 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeInMobile {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Réduire les animations pour les performances */
+    .collapse {
+        transition: height 0.2s ease;
+    }
+}
+
+/* Utilitaires mobile spéciaux */
+@media (max-width: 767px) {
+    .mobile-hidden {
+        display: none !important;
+    }
+    
+    .mobile-only {
+        display: block !important;
+    }
+    
+    .mobile-center {
+        text-align: center !important;
+    }
+    
+    .mobile-full-width {
+        width: 100% !important;
+    }
+    
+    .mobile-no-padding {
+        padding: 0 !important;
+    }
+    
+    .mobile-small-text {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 991px) {
+    .container-fluid {
+        padding: 0 2rem;
+    }
+    
+    .dashboard-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.25rem;
+    }
+    
+    .btn {
+        padding: 0.625rem 1.25rem;
+    }
+}

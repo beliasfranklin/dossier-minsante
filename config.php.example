@@ -1,0 +1,61 @@
+<?php
+/**
+ * Configuration de base pour MINSANTE
+ * Copiez ce fichier vers config.php et modifiez les valeurs
+ */
+
+// Configuration de la base de données
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'minsante_dossiers');
+define('DB_USER', 'root');
+define('DB_PASS', '');
+
+// Configuration de l'application
+define('APP_NAME', 'MINSANTE');
+define('APP_VERSION', '2.0.0');
+define('APP_URL', 'http://localhost/dossier-minsante');
+
+// Sécurité
+define('SECRET_KEY', 'changez-cette-cle-secrete-pour-la-production');
+define('SESSION_TIMEOUT', 3600); // 1 heure
+
+// Configuration email (optionnel)
+define('SMTP_HOST', 'smtp.gmail.com');
+define('SMTP_PORT', 587);
+define('SMTP_USER', 'votre-email@gmail.com');
+define('SMTP_PASS', 'votre-mot-de-passe');
+define('SMTP_FROM', 'noreply@minsante.gov');
+define('SMTP_FROM_NAME', 'MINSANTE - Système de Gestion');
+
+// Chemins
+define('UPLOAD_PATH', __DIR__ . '/uploads/');
+define('CACHE_PATH', __DIR__ . '/cache/');
+define('LOG_PATH', __DIR__ . '/logs/');
+
+// Configuration de debug (à désactiver en production)
+define('DEBUG_MODE', false);
+define('SHOW_ERRORS', false);
+
+// Rôles utilisateur
+define('ROLE_ADMIN', 'admin');
+define('ROLE_MANAGER', 'manager');
+define('ROLE_USER', 'user');
+
+// Limites
+define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
+define('ALLOWED_EXTENSIONS', 'pdf,doc,docx,xls,xlsx,jpg,jpeg,png,gif');
+
+// Langue par défaut
+define('DEFAULT_LANGUAGE', 'fr');
+
+// Timezone
+date_default_timezone_set('Africa/Porto-Novo');
+
+// Configuration de la pagination
+define('ITEMS_PER_PAGE', 20);
+
+// Configuration des notifications
+define('ENABLE_NOTIFICATIONS', true);
+define('ENABLE_EMAIL_NOTIFICATIONS', false);
+
+?>

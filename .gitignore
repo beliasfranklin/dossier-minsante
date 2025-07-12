@@ -1,0 +1,83 @@
+# Configuration et fichiers sensibles
+config.php
+.env
+.env.local
+
+# Logs et caches
+/logs/*.log
+/cache/*
+!/cache/.gitkeep
+/tmp/*
+!/tmp/.gitkeep
+
+# Uploads et fichiers utilisateur
+/uploads/*
+!/uploads/.gitkeep
+
+# Dossiers de développement temporaires
+/test_*
+/debug_*
+/diagnostic_*
+/repair_*
+/fix_*
+/install_*
+/verification_*
+/verify_*
+/check_*
+/create_*
+/force_*
+/maintenance_*
+
+# Fichiers de sauvegarde et temporaires
+*.sql
+*.backup
+*.bak
+*.tmp
+*.log
+*~
+.DS_Store
+Thumbs.db
+
+# Composer et dépendances
+/vendor/
+composer.lock
+
+# Fichiers spécifiques PHPMailer et mPDF si installés localement
+/PHPMailer-*/
+/mpdf-*/
+
+# Documentation de développement temporaire
+ANALYSE_*.md
+AUDIT_*.md
+CORRECTION_*.md
+DEMO_*.md
+DESIGN_*.md
+EXPORT_*.md
+GUIDE_*.md
+IMPLEMENTATION_*.md
+RAPPORT_*.md
+RESOLUTION_*.md
+SOLUTION_*.md
+
+# Fichiers de test et développement
+demo_*.php
+test_*.php
+test_*.txt
+dashboard_new.php
+login_new.php
+dashboard_personnalise.php
+demo_temps_reel.php
+deploy_*.php
+
+# Fichiers de configuration email temporaires
+setup_email*.php
+setup_gmail.php
+sendmail.php
+envoyermail.php
+
+# Base de données
+*.sql
+minsante_dossiers*.sql
+
+# Autres fichiers temporaires
+/sql_updates/temp_*

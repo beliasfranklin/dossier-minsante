@@ -1,0 +1,198 @@
+<?php
+// English translation file
+return [
+    // Navigation and menus
+    'app_name' => 'File Management System - MINSANTE',
+    'app_name_short' => 'MINSANTE',
+    'app_subtitle' => 'File Management',
+    'dashboard' => 'Dashboard',
+    'login' => 'Login',
+    'logout' => 'Logout',
+    'register' => 'Register',
+    'profile' => 'My profile',
+    'administration' => 'Administration',
+    
+    // Main menus
+    'dossiers' => 'Files',
+    'dossiers_list' => 'File list',
+    'dossiers_new' => 'New file',
+    'dossiers_archives' => 'Archives',
+    
+    'rapports' => 'Reports',
+    'rapports_stats' => 'Statistics',
+    'rapports_advanced' => 'Advanced reports',
+    'rapports_export' => 'Export',
+    
+    'communication' => 'Communication',
+    'communication_messagerie' => 'Messaging',
+    'communication_notifications' => 'Notifications',
+    
+    'language' => 'Language',
+    'french' => 'Français',
+    'english' => 'English',
+    
+    // Notifications
+    'notifications' => 'Notifications',
+    'notifications_see_all' => 'See all',
+    'notifications_empty' => 'No new notifications',
+    'notifications_and_others' => 'And {count} other notification(s)...',
+    
+    // Confirmations
+    'confirm_logout' => 'Are you sure you want to logout?',
+    
+    // Login/Auth
+    'login_title' => 'Login',
+    'email' => 'Email',
+    'password' => 'Password',
+    'login_button' => 'Sign in',
+    'register_link' => 'Don\'t have an account? Create one',
+    'forgot_password' => 'Forgot password?',
+    'incorrect_credentials' => 'Incorrect credentials',
+    'show_hide_password' => 'Show/hide password',
+    
+    // Forgot password
+    'forgot_password_title' => 'Forgot Password',
+    'forgot_password_desc' => 'Enter your email address to receive a reset link.',
+    'send_reset_link' => 'Send reset link',
+    'back_to_login' => 'Back to login',
+    'reset_email_sent' => 'A reset email has been sent.',
+    'user_not_found' => 'No user found with this email.',
+    
+    // Reset password
+    'reset_password_title' => 'New Password',
+    'reset_password_desc' => 'Choose a new secure password for your account.',
+    'new_password' => 'New password',
+    'reset_password_button' => 'Reset password',
+    'password_min_chars' => 'Minimum 6 characters',
+    'password_reset_success' => 'Password reset. You can now log in.',
+    'password_min_length_error' => 'Password must contain at least 6 characters.',
+    
+    // Dashboard
+    'recent_files' => 'Recent Files',
+    'total_files' => 'Total Files',
+    'in_progress' => 'In Progress',
+    'validated' => 'Validated',
+    'rejected' => 'Rejected',
+    'archived' => 'Archived',
+    
+    // Table headers
+    'reference' => 'Reference',
+    'title' => 'Title',
+    'status' => 'Status',
+    'priority' => 'Priority',
+    'responsible' => 'Responsible',
+    'creation_date' => 'Creation Date',
+    'deadline' => 'Deadline',
+    'actions' => 'Actions',
+    'view' => 'View',
+    
+    // Admin page
+    'admin_panel' => 'Administration Panel',
+    'admin_welcome' => 'Administrator Dashboard',
+    'user_management' => 'User Management',
+    'user_management_desc' => 'Manage user accounts',
+    'total_users' => 'Total Users',
+    'activity_logs' => 'Activity Logs',
+    'activity_logs_desc' => 'Monitor system activity',
+    'recent_actions' => 'Recent Actions',
+    'system_stats' => 'System Statistics',
+    'system_stats_desc' => 'Performance overview',
+    'active_sessions' => 'Active Sessions',
+    'name' => 'Name',
+    'role' => 'Role',
+    'role_admin' => 'Administrator',
+    'role_manager' => 'Manager',
+    'role_consultant' => 'Consultant',
+    'update_role' => 'Update Role',
+    'create_user' => 'Create User',
+    'password_confirmation' => 'Password Confirmation',
+    'select_role' => 'Select Role',
+    'create_account' => 'Create Account',
+    'last_login' => 'Last Login',
+    'date_registered' => 'Registration Date',
+    
+    // Profile page
+    'user_profile' => 'User Profile',
+    'personal_info' => 'Personal Information',
+    'recent_activity' => 'Recent Activity',
+    'my_files' => 'My Files',
+    'account_settings' => 'Account Settings',
+    
+    // Modules
+    'create_file' => 'Create File',
+    'file_list' => 'File List',
+    'service' => 'Service',
+    'type' => 'Type',
+    'description' => 'Description',
+    'attachments' => 'Attachments',
+    'workflow' => 'Workflow',
+    'process_file' => 'Process File',
+    
+    // Common
+    'yes' => 'Yes',
+    'no' => 'No',
+    'save' => 'Save',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'add' => 'Add',
+    'search' => 'Search',
+    'language' => 'Language',
+    'french' => 'French',
+    'english' => 'English',
+    'loading' => 'Loading...',
+    'error' => 'Error',
+    'success' => 'Success',
+    'warning' => 'Warning',
+    'info' => 'Information',
+    
+    // Verification system
+    'verification' => 'Verification',
+    'config_included' => 'Config included',
+    'config_missing' => 'Config missing',
+    'translations_used' => 'Translations used',
+    'translations_missing' => 'Translations missing',
+    'file_not_found' => 'File not found',
+    'test_functions' => 'Function tests',
+    'system_ok' => 'System working',
+    'system_needs_fixes' => 'System needs fixes',
+    'all_pages_compatible' => 'All pages are compatible with the language system.',
+    'some_pages_need_fixes' => 'Some pages need fixes.',
+    'test_language_switch' => 'Test language switch',
+    
+    // Archive/Export (additional)
+    'access_denied' => 'Access denied',
+    
+    // Archive/Export
+    'missing_file_id' => 'Missing file ID',
+    'archived_file_not_found' => 'Archived file not found',
+    'archived_file_report' => 'Archived File - Detailed Report',
+    'generated_on' => 'Generated on',
+    'archived_document' => 'ARCHIVED DOCUMENT',
+    'general_info' => 'General Information',
+    'reference' => 'Reference',
+    'title' => 'Title',
+    'description' => 'Description',
+    'type' => 'Type',
+    'service' => 'Service',
+    'status' => 'Status',
+    'priority' => 'Priority',
+    'responsible' => 'Responsible',
+    'created_by' => 'Created by',
+    'creation_date' => 'Creation Date',
+    'last_modified' => 'Last Modified',
+    'deadline' => 'Deadline',
+    'attachments' => 'Attachments',
+    'size' => 'Size',
+    'added_on' => 'Added on',
+    'modification_history' => 'Modification History',
+    'by_user' => 'by',
+    'on_date' => 'on',
+    'print' => 'Print',
+    'back_to_list' => 'Back to list',
+    'not_specified' => 'Not specified',
+    'access_denied' => 'Access denied',
+    'export_error' => 'Export error',
+    'missing_file_id' => 'Missing file ID',
+    'archived_file_not_found' => 'Archived file not found',
+];
