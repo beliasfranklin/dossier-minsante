@@ -591,11 +591,10 @@ function getActionTypeColor($action) {
     if (strpos($action, 'DELETE') !== false) return 'danger';
     if (strpos($action, 'CHANGE_STATUS') !== false) return 'info';
     return 'secondary';
-}
+
 
 function canEditDossier($user_id, $user_role, $responsable_id) {
     return $user_role <= ROLE_GESTIONNAIRE || $user_id == $responsable_id;
-}
 
-include '../../includes/footer.php';
+include '../../includes/footer.php'; 
 ?>
