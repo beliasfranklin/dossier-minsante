@@ -37,7 +37,8 @@ function login($email, $password) {
     
     if ($user && password_verify($password . PEPPER, $user['password_hash'])) {
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['role'] = $user['role'];          // Nouvelle convention
+        $_SESSION['user_role'] = $user['role'];     // Ancienne convention pour compatibilité
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['last_activity'] = time();
         return true;
@@ -55,8 +56,16 @@ function logout() {
 
 function hasPermission($requiredRole) {
     // 1. Vérifie si la session est valide
-    if (!isset($_SESSION['user_id'], $_SESSION['user_role'])) {
+    if (!isset($_SESSION['user_id'])) {
         error_log("Session incomplète pour la vérification des permissions");
+        return false;
+    }
+
+    // Utiliser role ou user_role selon ce qui est disponible
+    $sessionRole = $_SESSION['role'] ?? $_SESSION['user_role'] ?? null;
+    
+    if (!$sessionRole) {
+        error_log("Aucun rôle défini en session pour l'utilisateur: ".$_SESSION['user_id']);
         return false;
     }
 
