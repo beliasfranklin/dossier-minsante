@@ -1,0 +1,141 @@
+/* CSS pour thème clair uniquement - Mode sombre complètement supprimé */
+
+/* Variables de base - thème clair seulement */
+:root, [data-theme], [data-theme="light"], [data-theme="auto"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --border-color: #dee2e6;
+    --accent-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+/* Forcer le thème clair même si le navigateur préfère le sombre */
+@media (prefers-color-scheme: dark) {
+    :root, [data-theme="auto"] {
+        --bg-primary: #ffffff !important;
+        --bg-secondary: #f8f9fa !important;
+        --text-primary: #2c3e50 !important;
+        --text-secondary: #6c757d !important;
+        --border-color: #dee2e6 !important;
+        --accent-color: #007bff !important;
+        --success-color: #28a745 !important;
+        --warning-color: #ffc107 !important;
+        --danger-color: #dc3545 !important;
+    }
+}
+
+/* Transitions fluides */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Éliminer toute référence au thème sombre */
+[data-theme-preview], [data-theme="dark"] {
+    /* Forcer le thème clair */
+    --bg-primary: #ffffff !important;
+    --bg-secondary: #f8f9fa !important;
+    --text-primary: #2c3e50 !important;
+    --text-secondary: #6c757d !important;
+    --border-color: #dee2e6 !important;
+}
+
+/* Éléments spécifiques au thème */
+.theme-toggle {
+    background: var(--accent-color) !important;
+    color: white !important;
+}
+
+.stat-card {
+    background: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.activity-header {
+    background: linear-gradient(135deg, var(--accent-color), #667eea) !important;
+}
+
+/* Formulaires - toujours en thème clair */
+.form-control {
+    background: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-control:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+}
+
+/* Indicateurs visuels */
+.theme-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: var(--accent-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    z-index: 1000;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.theme-indicator:hover {
+    opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Suppression complète de tout style sombre */
+body, html {
+    background: #ffffff !important;
+    color: #2c3e50 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .theme-toggle {
+        position: static;
+        margin: 1rem auto;
+        display: block;
+    }
+}
+
+/* S'assurer qu'aucun élément ne peut avoir un arrière-plan sombre */
+* {
+    color: var(--text-primary) !important;
+}
+
+*:not(.activity-header):not(.theme-toggle):not(.btn-primary) {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Exceptions pour les éléments qui doivent garder leurs couleurs */
+.activity-header, .theme-toggle, .btn-primary, 
+.activity-icon, .stat-value, .alert-success, .alert-error {
+    /* Garder leurs styles spécifiques */
+}
