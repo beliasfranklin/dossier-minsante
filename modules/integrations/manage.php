@@ -283,6 +283,21 @@ function syncRHData() {
     }
 }
 
+/**
+ * Récupère une valeur de configuration
+ */
+function getConfig($key, $default = '') {
+    global $pdo;
+    try {
+        $stmt = $pdo->prepare("SELECT config_value FROM integrations WHERE service_name = 'system' AND config_key = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetchColumn();
+        return $result !== false ? $result : $default;
+    } catch (Exception $e) {
+        return $default;
+    }
+}
+
 // Récupérer les configurations actuelles
 $currentConfig = fetchAll("SELECT config_key, config_value FROM integrations WHERE service_name = 'system'");
 $config = [];
@@ -315,223 +330,276 @@ $connectivityTests = [
 include __DIR__ . '/../../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intégrations Système - MINSANTE</title>
-    <link rel="stylesheet" href="../../assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        .integrations-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .integration-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .integration-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .integration-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-        
-        .integration-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f8f9fa;
-        }
-        
-        .card-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: #2d3748;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        
-        .status-online {
-            background: #27ae60;
-            box-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
-        }
-        
-        .status-offline {
-            background: #e74c3c;
-        }
-        
-        .status-unknown {
-            background: #f39c12;
-        }
-        
-        .config-form {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-            display: block;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-secondary {
-            background: #64748b;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-success {
-            background: #27ae60;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-        
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .stats-table th,
-        .stats-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #e1e8ed;
-        }
-        
-        .stats-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        
-        .badge {
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.8em;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .badge-warning {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .badge-danger {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .checkbox-wrapper input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+<div class="main-content">
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="icon-grid"></i>
+            Gestion des Intégrations
+        </h1>
+        <p class="page-subtitle">Configuration et monitoring des intégrations systèmes</p>
+    </div>
+
+    <!-- Messages flash -->
+    <?php if (isset($_SESSION['flash'])): ?>
+        <?php foreach ($_SESSION['flash'] as $type => $message): ?>
+            <div class="alert alert-<?= $type === 'error' ? 'danger' : $type ?> alert-dismissible fade show">
+                <i class="icon-<?= $type === 'success' ? 'check' : ($type === 'error' ? 'alert-triangle' : 'info') ?>"></i>
+                <?= htmlspecialchars($message) ?>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                    <i class="icon-x"></i>
+                </button>
+            </div>
+        <?php endforeach; ?>
+        <?php unset($_SESSION['flash']); ?>
+    <?php endif; ?>
+
+    <!-- Tests de connectivité -->
+    <div class="connectivity-grid">
+        <?php foreach ($connectivityTests as $service => $test): ?>
+            <div class="connectivity-card">
+                <div class="connectivity-header">
+                    <i class="icon-<?= $service === 'rh' ? 'users' : ($service === 'finance' ? 'dollar-sign' : 'archive') ?>"></i>
+                    <h3><?= ucfirst($service) ?></h3>
+                </div>
+                <div class="connectivity-status status-<?= $test['success'] ? 'online' : 'offline' ?>">
+                    <div class="status-indicator"></div>
+                    <span><?= $test['success'] ? 'En ligne' : 'Hors ligne' ?></span>
+                </div>
+                <p class="connectivity-message"><?= htmlspecialchars($test['message']) ?></p>
+                <form method="POST" class="inline-form">
+                    <input type="hidden" name="action" value="test_<?= $service ?>_integration">
+                    <button type="submit" class="btn btn-outline btn-sm">
+                        <i class="icon-refresh"></i> Tester
+                    </button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="content-grid">
+        <div class="content-main">
+            <!-- Configuration générale -->
+            <div class="form-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="icon-settings"></i>
+                        Configuration des Intégrations
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <form method="POST" class="modern-form">
+                        <input type="hidden" name="action" value="save_integration_config">
+                        
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="icon-users"></i>
+                                Système RH
+                            </h4>
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="rh_api_url" class="form-label">URL API RH</label>
+                                    <input type="url" class="form-input" id="rh_api_url" name="rh_api_url" 
+                                           value="<?= htmlspecialchars(getConfig('rh_api_url', '')) ?>"
+                                           placeholder="https://rh.minsante.cm/api">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rh_api_key" class="form-label">Clé API RH</label>
+                                    <input type="password" class="form-input" id="rh_api_key" name="rh_api_key" 
+                                           value="<?= htmlspecialchars(getConfig('rh_api_key', '')) ?>"
+                                           placeholder="Clé secrète d'authentification">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="icon-dollar-sign"></i>
+                                Système Financier
+                            </h4>
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="finance_api_url" class="form-label">URL API Finance</label>
+                                    <input type="url" class="form-input" id="finance_api_url" name="finance_api_url" 
+                                           value="<?= htmlspecialchars(getConfig('finance_api_url', '')) ?>"
+                                           placeholder="https://finance.minsante.cm/api">
+                                </div>
+                                <div class="form-group">
+                                    <label for="finance_api_key" class="form-label">Clé API Finance</label>
+                                    <input type="password" class="form-input" id="finance_api_key" name="finance_api_key" 
+                                           value="<?= htmlspecialchars(getConfig('finance_api_key', '')) ?>"
+                                           placeholder="Clé secrète d'authentification">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="icon-archive"></i>
+                                Système d'Archivage
+                            </h4>
+                            <div class="form-group">
+                                <label for="archive_api_url" class="form-label">URL API Archives</label>
+                                <input type="url" class="form-input" id="archive_api_url" name="archive_api_url" 
+                                       value="<?= htmlspecialchars(getConfig('archive_api_url', '')) ?>"
+                                       placeholder="https://archives.minsante.cm/api">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="icon-clock"></i>
+                                Paramètres de Synchronisation
+                            </h4>
+                            <div class="form-grid-2">
+                                <div class="form-group">
+                                    <label for="sync_frequency" class="form-label">Fréquence de sync (heures)</label>
+                                    <input type="number" class="form-input" id="sync_frequency" name="sync_frequency" 
+                                           value="<?= htmlspecialchars(getConfig('sync_frequency', '24')) ?>"
+                                           min="1" max="168">
+                                </div>
+                                <div class="form-group">
+                                    <label for="webhook_secret" class="form-label">Secret Webhook</label>
+                                    <input type="password" class="form-input" id="webhook_secret" name="webhook_secret" 
+                                           value="<?= htmlspecialchars(getConfig('webhook_secret', '')) ?>"
+                                           placeholder="Secret pour validation webhooks">
+                                </div>
+                            </div>
+                            
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="auto_sync_enabled" 
+                                           <?= getConfig('auto_sync_enabled', 0) ? 'checked' : '' ?>>
+                                    <span class="checkmark"></span>
+                                    Activer la synchronisation automatique
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" name="backup_enabled" 
+                                           <?= getConfig('backup_enabled', 0) ? 'checked' : '' ?>>
+                                    <span class="checkmark"></span>
+                                    Activer les sauvegardes automatiques
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icon-save"></i>
+                                Sauvegarder la Configuration
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Actions rapides -->
+            <div class="action-cards">
+                <div class="action-card">
+                    <h4>
+                        <i class="icon-refresh"></i>
+                        Synchronisation RH
+                    </h4>
+                    <p>Synchroniser les données du personnel avec le système RH</p>
+                    <form method="POST" class="inline-form">
+                        <input type="hidden" name="action" value="sync_rh_data">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="icon-download"></i>
+                            Synchroniser maintenant
+                        </button>
+                    </form>
+                </div>
+
+                <div class="action-card">
+                    <h4>
+                        <i class="icon-archive"></i>
+                        Test Archivage
+                    </h4>
+                    <p>Tester la connexion avec le système d'archivage</p>
+                    <form method="POST" class="inline-form">
+                        <input type="hidden" name="action" value="test_archive_sync">
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="icon-check"></i>
+                            Tester l'archivage
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-sidebar">
+            <!-- Statistiques -->
+            <div class="stats-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="icon-activity"></i>
+                        Logs d'Intégration
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <?php if (!empty($integrationLogs)): ?>
+                        <div class="logs-list">
+                            <?php foreach ($integrationLogs as $log): ?>
+                                <div class="log-item">
+                                    <div class="log-header">
+                                        <span class="badge badge-<?= $log['success_count'] > $log['total_errors'] ? 'success' : 'warning' ?>">
+                                            <?= htmlspecialchars($log['service_name']) ?>
+                                        </span>
+                                        <span class="log-date"><?= date('d/m H:i', strtotime($log['last_sync'])) ?></span>
+                                    </div>
+                                    <div class="log-stats">
+                                        <span class="stat-success"><?= $log['success_count'] ?> succès</span>
+                                        <?php if ($log['total_errors'] > 0): ?>
+                                            <span class="stat-error"><?= $log['total_errors'] ?> erreurs</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            <i class="icon-info"></i>
+                            <p>Aucun log disponible</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Guide rapide -->
+            <div class="info-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="icon-help-circle"></i>
+                        Guide Rapide
+                    </h3>
+                </div>
+                <div class="card-content">
+                    <div class="guide-steps">
+                        <div class="guide-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <strong>Configuration</strong>
+                                <p>Configurez les URLs et clés API pour chaque système</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <strong>Test</strong>
+                                <p>Testez la connectivité avec chaque service</p>
+                            </div>
+                        </div>
+                        <div class="guide-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <strong>Surveillance</strong>
+                                <p>Surveillez les logs et statistiques</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
         }
         
         .api-endpoint {
@@ -830,24 +898,114 @@ include __DIR__ . '/../../includes/header.php';
                     setTimeout(function() {
                         message.remove();
                     }, 300);
-                }, 5000);
-            });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des cartes de connectivité
+    animateElementsOnScroll('.connectivity-card');
+    
+    // Gestion des formulaires avec notifications modernes
+    document.querySelectorAll('form.modern-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            // Animation de soumission
+            submitBtn.innerHTML = '<i class="icon-loading animate-spin"></i> Enregistrement...';
+            submitBtn.disabled = true;
+            
+            // Simulation de l'envoi (remplacez par votre logique AJAX si nécessaire)
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                
+                // Soumission réelle du formulaire
+                this.submit();
+            }, 500);
         });
-        
-        // Confirmation pour les syncs
-        document.querySelectorAll('form[method="post"]').forEach(function(form) {
-            const action = form.querySelector('input[name="action"]')?.value;
-            if (action && action.includes('sync')) {
-                form.addEventListener('submit', function(e) {
-                    if (!confirm('Êtes-vous sûr de vouloir lancer cette synchronisation ?')) {
-                        e.preventDefault();
-                    }
-                });
+    });
+    
+    // Tests de connectivité avec feedback
+    document.querySelectorAll('.inline-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            const btn = this.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            const action = this.querySelector('input[name="action"]')?.value;
+            
+            if (action && action.includes('test')) {
+                e.preventDefault();
+                
+                btn.innerHTML = '<i class="icon-loading animate-spin"></i> Test...';
+                btn.disabled = true;
+                
+                // Simulation du test
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    
+                    // Soumission réelle
+                    this.submit();
+                }, 1000);
             }
         });
-    </script>
+    });
     
-    <?php include __DIR__ . '/../../includes/footer.php'; ?>
+    // Confirmation pour les synchronisations
+    document.querySelectorAll('form[method="POST"]').forEach(form => {
+        const action = form.querySelector('input[name="action"]')?.value;
+        if (action && action.includes('sync')) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                showConfirmDialog(
+                    'Confirmer la synchronisation',
+                    'Êtes-vous sûr de vouloir lancer cette synchronisation ?',
+                    () => {
+                        this.submit();
+                    }
+                );
+            });
+        }
+    });
+    
+    // Auto-masquage des alertes
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            if (!alert.querySelector('.alert-close:hover')) {
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-10px)';
+                setTimeout(() => alert.remove(), 300);
+            }
+        });
+    }, 5000);
+    
+    // Validation en temps réel des URLs
+    document.querySelectorAll('input[type="url"]').forEach(input => {
+        input.addEventListener('blur', function() {
+            const url = this.value.trim();
+            if (url && !isValidUrl(url)) {
+                this.classList.add('form-input-error');
+                showNotification('URL invalide', 'warning');
+            } else {
+                this.classList.remove('form-input-error');
+            }
+        });
+    });
+    
+    // Helper pour valider les URLs
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+});
+</script>
+
+<?php include __DIR__ . '/../../includes/footer.php'; ?>
 </body>
 </html>
 

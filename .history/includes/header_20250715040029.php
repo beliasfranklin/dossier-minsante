@@ -306,22 +306,6 @@ if (!isset($pageTitle)) {
         text-align: center;
     }
 
-    /* Menu Aide & Support */
-    .dropdown-menu.aide-menu li a {
-        color: #d97706;
-    }
-    .dropdown-menu.aide-menu li a:hover {
-        background: linear-gradient(135deg, #fef3c7, #fed7aa);
-        color: #ea580c;
-        transform: translateX(4px);
-        box-shadow: 0 2px 8px rgba(217,119,6,0.1);
-    }
-    .dropdown-menu.aide-menu li a i {
-        color: #f59e0b;
-        width: 18px;
-        text-align: center;
-    }
-
     /* Système de notifications modernisé */
     .notification-menu {
         position: relative;
@@ -944,8 +928,8 @@ if (!isset($pageTitle)) {
                             <li><a href="<?= BASE_URL ?>modules/categories/index.php"><i class="fas fa-tags"></i> Catégories</a></li>
                             <li><a href="<?= BASE_URL ?>modules/workflow/index.php"><i class="fas fa-route"></i> Workflow</a></li>
                             <?php if (hasPermission(ROLE_ADMIN)): ?>
-                            <li><a href="<?= BASE_URL ?>modules/users/list.php"><i class="fas fa-users"></i> Gestion Utilisateurs</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/integrations/manage.php"><i class="fas fa-plug"></i> Intégrations</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/users/index.php"><i class="fas fa-users"></i> Gestion Utilisateurs</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/integrations/index.php"><i class="fas fa-plug"></i> Intégrations</a></li>
                             <li><a href="<?= BASE_URL ?>modules/statuts/transitions.php"><i class="fas fa-exchange-alt"></i> Transitions Statuts</a></li>
                             <li><a href="<?= BASE_URL ?>modules/logs/index.php"><i class="fas fa-history"></i> Journal d'Audit</a></li>
                             <?php endif; ?>
@@ -963,7 +947,6 @@ if (!isset($pageTitle)) {
                             <button class="menu-close-btn" onclick="closeRapportsMenu(event)" title="Fermer le menu">×</button>
                             <li><a href="<?= BASE_URL ?>modules/reporting/stats.php"><i class="fas fa-chart-pie"></i> <?= t('rapports_stats') ?></a></li>
                             <li><a href="<?= BASE_URL ?>modules/reporting/advanced.php"><i class="fas fa-chart-line"></i> <?= t('rapports_advanced') ?></a></li>
-                            <li><a href="<?= BASE_URL ?>modules/analytics/index.php"><i class="fas fa-chart-area"></i> Analytics</a></li>
                             <li><a href="<?= BASE_URL ?>modules/export/export.php"><i class="fas fa-file-export"></i> <?= t('rapports_export') ?></a></li>
                         </ul>
                     </li>
@@ -977,28 +960,11 @@ if (!isset($pageTitle)) {
                         <ul class="dropdown-menu communication-menu">
                             <button class="menu-close-btn" onclick="closeCommunicationMenu(event)" title="Fermer le menu">×</button>
                             <li><a href="<?= BASE_URL ?>modules/messagerie/list.php"><i class="fas fa-envelope"></i> <?= t('communication_messagerie') ?></a></li>
-                            <li><a href="<?= BASE_URL ?>modules/email/index.php"><i class="fas fa-at"></i> Email</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/whatsapp/index.php"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
                             <li><a href="<?= BASE_URL ?>modules/notifications/list.php"><i class="fas fa-bell"></i> <?= t('communication_notifications') ?></a></li>
                         </ul>
                     </li>
 
                     <li><a href="<?= BASE_URL ?>modules/users/profile.php" class="nav-link"><i class="fa-solid fa-user"></i> <?= t('profile') ?></a></li>
-                    
-                    <!-- Menu déroulant Aide & Support -->
-                    <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle">
-                            <i class="fa-solid fa-question-circle"></i> Aide 
-                            <i class="fas fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu aide-menu">
-                            <button class="menu-close-btn" onclick="closeAideMenu(event)" title="Fermer le menu">×</button>
-                            <li><a href="<?= BASE_URL ?>modules/help/index.php"><i class="fas fa-book"></i> Documentation</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/help/faq.php"><i class="fas fa-question"></i> FAQ</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/support/index.php"><i class="fas fa-headset"></i> Support</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/help/tutorials.php"><i class="fas fa-play-circle"></i> Tutoriels</a></li>
-                        </ul>
-                    </li>
                     
                     <!-- Menu notifications amélioré -->
                     <li class="notification-menu">
@@ -1139,21 +1105,6 @@ if (!isset($pageTitle)) {
     }
     
     function closeLangueMenu(event) {
-        event.stopPropagation();
-        const menu = event.target.closest('.dropdown-menu');
-        if (window.innerWidth <= 800) {
-            menu.style.opacity = '0';
-            setTimeout(() => {
-                menu.style.display = 'none';
-            }, 150);
-        } else {
-            menu.style.display = 'none';
-            menu.style.opacity = '0';
-            menu.style.transform = 'translateX(-50%) translateY(-10px)';
-        }
-    }
-
-    function closeAideMenu(event) {
         event.stopPropagation();
         const menu = event.target.closest('.dropdown-menu');
         if (window.innerWidth <= 800) {

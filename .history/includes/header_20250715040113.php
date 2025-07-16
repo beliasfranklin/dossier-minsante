@@ -306,22 +306,6 @@ if (!isset($pageTitle)) {
         text-align: center;
     }
 
-    /* Menu Aide & Support */
-    .dropdown-menu.aide-menu li a {
-        color: #d97706;
-    }
-    .dropdown-menu.aide-menu li a:hover {
-        background: linear-gradient(135deg, #fef3c7, #fed7aa);
-        color: #ea580c;
-        transform: translateX(4px);
-        box-shadow: 0 2px 8px rgba(217,119,6,0.1);
-    }
-    .dropdown-menu.aide-menu li a i {
-        color: #f59e0b;
-        width: 18px;
-        text-align: center;
-    }
-
     /* Système de notifications modernisé */
     .notification-menu {
         position: relative;
@@ -944,8 +928,8 @@ if (!isset($pageTitle)) {
                             <li><a href="<?= BASE_URL ?>modules/categories/index.php"><i class="fas fa-tags"></i> Catégories</a></li>
                             <li><a href="<?= BASE_URL ?>modules/workflow/index.php"><i class="fas fa-route"></i> Workflow</a></li>
                             <?php if (hasPermission(ROLE_ADMIN)): ?>
-                            <li><a href="<?= BASE_URL ?>modules/users/list.php"><i class="fas fa-users"></i> Gestion Utilisateurs</a></li>
-                            <li><a href="<?= BASE_URL ?>modules/integrations/manage.php"><i class="fas fa-plug"></i> Intégrations</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/users/index.php"><i class="fas fa-users"></i> Gestion Utilisateurs</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/integrations/index.php"><i class="fas fa-plug"></i> Intégrations</a></li>
                             <li><a href="<?= BASE_URL ?>modules/statuts/transitions.php"><i class="fas fa-exchange-alt"></i> Transitions Statuts</a></li>
                             <li><a href="<?= BASE_URL ?>modules/logs/index.php"><i class="fas fa-history"></i> Journal d'Audit</a></li>
                             <?php endif; ?>
@@ -1139,21 +1123,6 @@ if (!isset($pageTitle)) {
     }
     
     function closeLangueMenu(event) {
-        event.stopPropagation();
-        const menu = event.target.closest('.dropdown-menu');
-        if (window.innerWidth <= 800) {
-            menu.style.opacity = '0';
-            setTimeout(() => {
-                menu.style.display = 'none';
-            }, 150);
-        } else {
-            menu.style.display = 'none';
-            menu.style.opacity = '0';
-            menu.style.transform = 'translateX(-50%) translateY(-10px)';
-        }
-    }
-
-    function closeAideMenu(event) {
         event.stopPropagation();
         const menu = event.target.closest('.dropdown-menu');
         if (window.innerWidth <= 800) {
