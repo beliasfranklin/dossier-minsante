@@ -1,0 +1,1421 @@
+<?php
+// Inclure d'abord le config principal pour avoir accès aux fonctions de base
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/notifications.php';
+/**
+ * En-tête commune de l'application
+ */
+if (!isset($pageTitle)) {
+    $pageTitle = t('app_name_short') . ' - ' . t('app_subtitle');
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= htmlspecialchars($pageTitle) ?></title>
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/mobile-optimized.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/mobile-optimizer.js?v=<?= time() ?>"></script>
+    <style>
+    /* Boutons de fermeture pour les menus */
+    .menu-close-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.8em;
+        color: #64748b;
+        transition: var(--transition-fast);
+        z-index: 10;
+    }
+    
+    .menu-close-btn:hover {
+        background: #e2e8f0;
+        color: #374151;
+        transform: scale(1.1);
+    }
+    
+    .dropdown-menu {
+        position: relative;
+    }
+
+    /* Variables CSS modernes pour le header */
+    :root {
+        --header-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --header-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --header-accent: rgba(255, 255, 255, 0.15);
+        --header-hover: rgba(255, 255, 255, 0.25);
+        --header-text: #ffffff;
+        --header-text-secondary: rgba(255, 255, 255, 0.9);
+        --header-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        --header-shadow-hover: 0 8px 32px rgba(102, 126, 234, 0.25);
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-fast: all 0.15s ease;
+        --radius-modern: 12px;
+        --radius-pill: 25px;
+    }
+
+    /* Navigation principale modernisée */
+    .main-nav ul {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        list-style: none;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .main-nav ul li a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: var(--header-text);
+        padding: 10px 16px;
+        border-radius: var(--radius-modern);
+        transition: var(--transition-smooth);
+        text-decoration: none;
+        font-size: 0.9em;
+        position: relative;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        background: transparent;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+    
+    .main-nav ul li a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--header-accent);
+        border-radius: var(--radius-modern);
+        opacity: 0;
+        transition: var(--transition-smooth);
+        z-index: -1;
+    }
+    
+    .main-nav ul li a:hover::before, 
+    .main-nav ul li a.active::before {
+        opacity: 1;
+    }
+    
+    .main-nav ul li a:hover, 
+    .main-nav ul li a.active {
+        color: var(--header-text);
+        transform: translateY(-2px);
+        text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+    }
+    
+    .main-nav ul li a i {
+        color: var(--header-text);
+        font-size: 1em;
+        transition: var(--transition-smooth);
+        text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .main-nav ul li a:hover i {
+        transform: scale(1.1);
+    }
+    
+    .main-nav ul li .logout-link {
+        color: var(--header-text);
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .main-nav ul li .logout-link::before {
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .main-nav ul li .logout-link:hover {
+        background: linear-gradient(135deg, #c0392b, #a93226);
+        color: var(--header-text);
+        box-shadow: 0 4px 20px rgba(231,76,60,0.3);
+    }
+    
+    /* Menus déroulants modernisés */
+    .dropdown {
+        position: relative;
+    }
+    
+    .dropdown-toggle {
+        cursor: pointer;
+        position: relative;
+    }
+    
+    .dropdown-toggle .fa-chevron-down {
+        transition: var(--transition-smooth);
+        margin-left: 4px;
+        font-size: 0.8em;
+        opacity: 0.8;
+    }
+    
+    .dropdown:hover .dropdown-toggle .fa-chevron-down {
+        transform: rotate(180deg);
+        opacity: 1;
+    }
+    
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border-radius: var(--radius-modern);
+        box-shadow: var(--header-shadow-hover);
+        min-width: 240px;
+        padding: 8px 0;
+        z-index: 1000;
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+        transition: var(--transition-smooth);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    
+    .dropdown:hover .dropdown-menu {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    
+    .dropdown-menu::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid white;
+        filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
+    }
+    
+    .dropdown-menu li {
+        list-style: none;
+        margin: 0;
+    }
+    
+    .dropdown-menu li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        color: #475569;
+        text-decoration: none;
+        transition: var(--transition-smooth);
+        font-size: 0.9em;
+        border-radius: 0;
+        font-weight: 500;
+        margin: 2px 8px;
+        border-radius: 8px;
+    }
+    
+    /* Couleurs thématiques modernisées pour les menus */
+    .dropdown-menu.dossiers-menu li a {
+        color: #059669;
+    }
+    .dropdown-menu.dossiers-menu li a:hover {
+        background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+        color: #047857;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(5,150,105,0.1);
+    }
+    .dropdown-menu.dossiers-menu li a i {
+        color: #10b981;
+        width: 18px;
+        text-align: center;
+    }
+    
+    .dropdown-menu.gestion-menu li a {
+        color: #7c3aed;
+    }
+    .dropdown-menu.gestion-menu li a:hover {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        color: #6d28d9;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(124,58,237,0.1);
+    }
+    .dropdown-menu.gestion-menu li a i {
+        color: #8b5cf6;
+        width: 18px;
+        text-align: center;
+    }
+    
+    .dropdown-menu.rapports-menu li a {
+        color: #7c2d12;
+    }
+    .dropdown-menu.rapports-menu li a:hover {
+        background: linear-gradient(135deg, #fef7ed, #fed7aa);
+        color: #9a3412;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(124,45,18,0.1);
+    }
+    .dropdown-menu.rapports-menu li a i {
+        color: #ea580c;
+        width: 18px;
+        text-align: center;
+    }
+    
+    .dropdown-menu.communication-menu li a {
+        color: #0369a1;
+    }
+    .dropdown-menu.communication-menu li a:hover {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        color: #0284c7;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(3,105,161,0.1);
+    }
+    .dropdown-menu.communication-menu li a i {
+        color: #0ea5e9;
+        width: 18px;
+        text-align: center;
+    }
+    
+    .dropdown-menu.langue-menu li a {
+        color: #1e40af;
+    }
+    .dropdown-menu.langue-menu li a:hover {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        color: #1d4ed8;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(30,64,175,0.1);
+    }
+    .dropdown-menu.langue-menu li a i {
+        color: #3b82f6;
+        width: 18px;
+        text-align: center;
+    }
+
+    /* Menu Aide & Support */
+    .dropdown-menu.aide-menu li a {
+        color: #d97706;
+    }
+    .dropdown-menu.aide-menu li a:hover {
+        background: linear-gradient(135deg, #fef3c7, #fed7aa);
+        color: #ea580c;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(217,119,6,0.1);
+    }
+    .dropdown-menu.aide-menu li a i {
+        color: #f59e0b;
+        width: 18px;
+        text-align: center;
+    }
+
+    /* Système de notifications modernisé */
+    .notification-menu {
+        position: relative;
+    }
+    
+    #notificationBell {
+        position: relative;
+        padding: 10px;
+        border-radius: 50%;
+        transition: var(--transition-smooth);
+        background: var(--header-accent);
+        border: 1px solid rgba(255,255,255,0.2);
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    #notificationBell:hover {
+        background: var(--header-hover);
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+    }
+    
+    #notificationBell i {
+        font-size: 1.1em;
+        color: var(--header-text);
+    }
+    
+    .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 0.7em;
+        min-width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        box-shadow: 0 2px 12px rgba(231,76,60,0.4);
+        animation: pulse 2s infinite;
+        border: 2px solid white;
+    }
+    
+    @keyframes pulse {
+        0% { 
+            box-shadow: 0 2px 12px rgba(231,76,60,0.4); 
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 2px 12px rgba(231,76,60,0.8), 0 0 0 4px rgba(231,76,60,0.2); 
+            transform: scale(1.05);
+        }
+        100% { 
+            box-shadow: 0 2px 12px rgba(231,76,60,0.4); 
+            transform: scale(1);
+        }
+    }
+    
+    .notification-dropdown {
+        display: none;
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        background: white;
+        border-radius: var(--radius-modern);
+        box-shadow: var(--header-shadow-hover);
+        min-width: 380px;
+        max-width: 420px;
+        z-index: 1000;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: var(--transition-smooth);
+        border: 1px solid rgba(102, 126, 234, 0.1);
+        backdrop-filter: blur(20px);
+    }
+    
+    .notification-dropdown.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .notification-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 20px;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-bottom: 6px solid white;
+        filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
+    }
+    
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border-radius: var(--radius-modern) var(--radius-modern) 0 0;
+    }
+    
+    .notification-header h4 {
+        margin: 0;
+        color: #1e293b;
+        font-size: 1.1em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .notification-header h4 i {
+        color: #667eea;
+        font-size: 1em;
+    }
+    
+    .notification-header a {
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9em;
+        font-weight: 500;
+        transition: var(--transition-fast);
+        padding: 6px 12px;
+        border-radius: 6px;
+        background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .notification-header a:hover {
+        color: #4f46e5;
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateY(-1px);
+    }
+    
+    .notification-list {
+        max-height: 420px;
+        overflow-y: auto;
+        padding: 0;
+    }
+    
+    .notification-list::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .notification-list::-webkit-scrollbar-track {
+        background: #f8fafc;
+        border-radius: 3px;
+    }
+    
+    .notification-list::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+        border-radius: 3px;
+    }
+    
+    .notification-list::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #94a3b8, #64748b);
+    }
+    
+    .notification-item {
+        display: block;
+        padding: 16px 24px;
+        border-bottom: 1px solid #f8fafc;
+        text-decoration: none;
+        transition: var(--transition-smooth);
+        position: relative;
+        background: white;
+    }
+    
+    .notification-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        opacity: 0;
+        transition: var(--transition-smooth);
+    }
+    
+    .notification-item:hover {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        transform: translateX(4px);
+    }
+    
+    .notification-item:hover::before {
+        opacity: 1;
+    }
+    
+    .notification-item:last-child {
+        border-bottom: none;
+        border-radius: 0 0 var(--radius-modern) var(--radius-modern);
+    }
+    
+    .notification-item .notification-title {
+        display: block;
+        color: #1e293b;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 0.95em;
+        line-height: 1.4;
+    }
+    
+    .notification-item .notification-message {
+        margin: 0 0 8px 0;
+        color: #64748b;
+        font-size: 0.85em;
+        line-height: 1.5;
+    }
+    
+    .notification-item .notification-time {
+        color: #94a3b8;
+        font-size: 0.8em;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .notification-item .notification-time i {
+        font-size: 0.9em;
+    }
+    
+    .notification-empty {
+        text-align: center;
+        padding: 60px 24px;
+        color: #64748b;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 0 0 var(--radius-modern) var(--radius-modern);
+    }
+    
+    .notification-empty i {
+        font-size: 2.5em;
+        margin-bottom: 16px;
+        color: #cbd5e1;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .notification-empty p {
+        margin: 0;
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    /* Logo modernisé */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: var(--header-text);
+        letter-spacing: 0.3px;
+        margin-right: 20px;
+        padding: 8px 12px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 320px;
+        background: var(--header-accent);
+        border-radius: var(--radius-modern);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: var(--transition-smooth);
+    }
+    
+    .logo:hover {
+        background: var(--header-hover);
+        transform: scale(1.02);
+        box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+    }
+    
+    .logo-icon {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,0.15);
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: var(--transition-smooth);
+    }
+    
+    .logo:hover .logo-icon {
+        background: rgba(255,255,255,0.25);
+        transform: scale(1.05);
+    }
+    
+    .logo-icon i {
+        font-size: 1.1em;
+        color: var(--header-text);
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        transition: var(--transition-smooth);
+    }
+    
+    .logo:hover .logo-icon i {
+        transform: rotate(5deg);
+    }
+    
+    .logo-icon .fa-notes-medical {
+        color: #e8f8f5;
+    }
+    
+    .logo-icon .fa-folder-open {
+        color: #fdf2e9;
+    }
+    
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+    }
+    
+    .logo-title {
+        font-size: 1em;
+        font-weight: 700;
+        color: var(--header-text);
+        margin: 0;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    
+    .logo-subtitle {
+        font-size: 0.75em;
+        color: var(--header-text-secondary);
+        font-weight: 500;
+        margin: 0;
+        opacity: 0.9;
+    }
+    
+    /* Header principal modernisé */
+    .app-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        min-height: 48px;
+    }
+    
+    header.app-header {
+        background: var(--header-primary);
+        color: var(--header-text);
+        box-shadow: var(--header-shadow);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+    }
+
+    /* Menu burger mobile modernisé */
+    .burger-menu {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        margin-left: 12px;
+        padding: 8px;
+        border-radius: var(--radius-modern);
+        transition: var(--transition-smooth);
+        background: var(--header-accent);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .burger-menu:hover {
+        background: var(--header-hover);
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+    }
+    
+    .burger-bar {
+        height: 3px;
+        width: 100%;
+        background: var(--header-text);
+        border-radius: 2px;
+        margin: 3px 0;
+        transition: var(--transition-smooth);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .burger-menu.active .burger-bar:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+    }
+    
+    .burger-menu.active .burger-bar:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    
+    .burger-menu.active .burger-bar:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* Responsive modernisé */
+    @media (max-width: 800px) {
+        .logo-text {
+            display: none;
+        }
+        
+        .logo {
+            max-width: 60px;
+            padding: 8px;
+        }
+        
+        .logo-icon {
+            padding: 6px 8px;
+        }
+        
+        .main-nav ul {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 12px;
+            background: white;
+            flex-direction: column;
+            gap: 0;
+            min-width: 240px;
+            box-shadow: var(--header-shadow-hover);
+            border-radius: var(--radius-modern);
+            z-index: 2000;
+            padding: 8px 0;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(20px);
+        }
+        
+        .main-nav ul.show {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .main-nav ul.show .mobile-menu-close {
+            display: block !important;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .main-nav ul li a {
+            padding: 12px 20px;
+            font-size: 0.9em;
+            border-radius: 0;
+            border-bottom: 1px solid #f1f5f9;
+            margin: 0;
+            color: #475569;
+            background: transparent;
+        }
+        
+        .main-nav ul li a:hover,
+        .main-nav ul li a.active {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            color: #667eea;
+            transform: translateX(4px);
+        }
+        
+        .main-nav ul li a i {
+            color: #667eea;
+        }
+        
+        .main-nav ul li:last-child a {
+            border-bottom: none;
+        }
+        
+        .main-nav ul li .logout-link {
+            color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        }
+        
+        .main-nav ul li .logout-link:hover {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #b91c1c;
+        }
+        
+        .burger-menu {
+            display: flex;
+        }
+        
+        .dropdown-menu {
+            position: static;
+            box-shadow: none;
+            margin: 0;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-top: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dropdown-menu::before {
+            display: none;
+        }
+        
+        .dropdown-menu li a {
+            color: #475569;
+            padding: 10px 24px;
+            font-size: 0.85em;
+        }
+        
+        .dropdown-menu li a:hover {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        
+        .notification-dropdown {
+            position: fixed;
+            top: 56px;
+            right: 12px;
+            left: 12px;
+            margin: 0;
+            max-width: none;
+        }
+        
+        .app-header .container {
+            padding: 8px 16px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .logo {
+            max-width: 50px;
+            padding: 6px;
+        }
+        
+        .logo-icon {
+            padding: 4px 6px;
+            gap: 4px;
+        }
+        
+        .logo-icon i {
+            font-size: 1em;
+        }
+        
+        .app-header .container {
+            padding: 6px 12px;
+        }
+        
+        .notification-dropdown {
+            top: 50px;
+            right: 8px;
+            left: 8px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-notes-medical"></i>
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <div class="logo-text">
+                    <div class="logo-title"><?= t('app_name_short') ?></div>
+                    <div class="logo-subtitle"><?= t('app_subtitle') ?></div>
+                </div>
+            </div>
+            <div class="burger-menu" id="burgerMenu" aria-label="Ouvrir le menu" tabindex="0">
+                <div class="burger-bar"></div>
+                <div class="burger-bar"></div>
+                <div class="burger-bar"></div>
+            </div>
+            <nav class="main-nav">
+                <ul id="mainNavList">
+                    <li class="mobile-menu-close" style="display: none;">
+                        <button class="menu-close-btn" onclick="closeBurgerMenu()" title="Fermer le menu" style="position: relative; top: 0; right: 0; margin: 8px;">×</button>
+                    </li>
+                    <li><a href="<?= BASE_URL ?>dashboard.php" class="nav-link"><i class="fa-solid fa-gauge"></i> <?= t('dashboard') ?></a></li>
+                    
+                    <!-- Recherche globale -->
+                    
+                    
+                    <!-- Menu déroulant Dossiers -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-folder-open"></i> <?= t('dossiers') ?> 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu dossiers-menu">
+                            <button class="menu-close-btn" onclick="closeDossierMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= BASE_URL ?>modules/dossiers/list.php"><i class="fas fa-list"></i> <?= t('dossiers_list') ?></a></li>
+                            <?php if (hasPermission(ROLE_GESTIONNAIRE)): ?>
+                            <li><a href="<?= BASE_URL ?>modules/dossiers/create.php"><i class="fas fa-plus"></i> <?= t('dossiers_new') ?></a></li>
+                            <?php endif; ?>
+                            <li><a href="<?= BASE_URL ?>modules/archivage/list.php"><i class="fas fa-archive"></i> <?= t('dossiers_archives') ?></a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Menu déroulant Gestion -->
+                    <?php if (hasPermission(ROLE_GESTIONNAIRE)): ?>
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-cogs"></i> Gestion 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu gestion-menu">
+                            <button class="menu-close-btn" onclick="closeGestionMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= BASE_URL ?>modules/echeances/dashboard.php"><i class="fas fa-clock"></i> Dashboard Échéances</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/echeances/config.php"><i class="fas fa-calendar-alt"></i> Config. Échéances</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/categories/index.php"><i class="fas fa-tags"></i> Catégories</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/workflow/index.php"><i class="fas fa-route"></i> Workflow</a></li>
+                            <?php if (hasPermission(ROLE_ADMIN)): ?>
+                            <li><a href="<?= BASE_URL ?>modules/users/index.php"><i class="fas fa-users"></i> Gestion Utilisateurs</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/integrations/index.php"><i class="fas fa-plug"></i> Intégrations</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/statuts/transitions.php"><i class="fas fa-exchange-alt"></i> Transitions Statuts</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/logs/index.php"><i class="fas fa-history"></i> Journal d'Audit</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </li>
+                    <?php endif; ?>
+
+                    <!-- Menu déroulant Rapports -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-chart-column"></i> <?= t('rapports') ?> 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu rapports-menu">
+                            <button class="menu-close-btn" onclick="closeRapportsMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= BASE_URL ?>modules/reporting/stats.php"><i class="fas fa-chart-pie"></i> <?= t('rapports_stats') ?></a></li>
+                            <li><a href="<?= BASE_URL ?>modules/reporting/advanced.php"><i class="fas fa-chart-line"></i> <?= t('rapports_advanced') ?></a></li>
+                            <li><a href="<?= BASE_URL ?>modules/analytics/index.php"><i class="fas fa-chart-area"></i> Analytics</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/export/export.php"><i class="fas fa-file-export"></i> <?= t('rapports_export') ?></a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Menu déroulant Communication -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-comments"></i> <?= t('communication') ?> 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu communication-menu">
+                            <button class="menu-close-btn" onclick="closeCommunicationMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= BASE_URL ?>modules/messagerie/list.php"><i class="fas fa-envelope"></i> <?= t('communication_messagerie') ?></a></li>
+                            <li><a href="<?= BASE_URL ?>modules/email/index.php"><i class="fas fa-at"></i> Email</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/whatsapp/index.php"><i class="fab fa-whatsapp"></i> WhatsApp</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/notifications/list.php"><i class="fas fa-bell"></i> <?= t('communication_notifications') ?></a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="<?= BASE_URL ?>modules/users/profile.php" class="nav-link"><i class="fa-solid fa-user"></i> <?= t('profile') ?></a></li>
+                    
+                    <!-- Menu déroulant Aide & Support -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-question-circle"></i> Aide 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu aide-menu">
+                            <button class="menu-close-btn" onclick="closeAideMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= BASE_URL ?>modules/help/index.php"><i class="fas fa-book"></i> Documentation</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/help/faq.php"><i class="fas fa-question"></i> FAQ</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/support/index.php"><i class="fas fa-headset"></i> Support</a></li>
+                            <li><a href="<?= BASE_URL ?>modules/help/tutorials.php"><i class="fas fa-play-circle"></i> Tutoriels</a></li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Menu notifications amélioré -->
+                    <li class="notification-menu">
+                        <a href="#" id="notificationBell">
+                            <i class="fa-solid fa-bell"></i>
+                            <?php 
+                            $unreadNotifications = getUnreadNotifications($_SESSION['user_id']);
+                            $unreadCount = count($unreadNotifications);
+                            if ($unreadCount > 0) : 
+                            ?>
+                                <span class="notification-badge"><?= $unreadCount > 99 ? '99+' : $unreadCount ?></span>
+                            <?php endif; ?>
+                        </a>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="notification-header">
+                                <h4><i class="fas fa-bell"></i> <?= t('notifications') ?></h4>
+                                <a href="<?= BASE_URL ?>modules/notifications/list.php"><?= t('notifications_see_all') ?></a>
+                            </div>
+                            <div class="notification-list">
+                                <?php if (!empty($unreadNotifications)): ?>
+                                    <?php foreach (array_slice($unreadNotifications, 0, 5) as $notif): ?>
+                                        <?php if (!empty($notif['title']) && trim($notif['title']) !== ''): ?>
+                                        <a href="<?= $notif['related_module'] ? BASE_URL.'modules/'.$notif['related_module'].'/view.php?id='.$notif['related_id'] : '#' ?>" 
+                                           class="notification-item" 
+                                           data-id="<?= $notif['id'] ?>">
+                                            <strong class="notification-title"><?= htmlspecialchars($notif['title']) ?></strong>
+                                            <p class="notification-message"><?= htmlspecialchars(substr($notif['message'], 0, 80)) ?><?= strlen($notif['message']) > 80 ? '...' : '' ?></p>
+                                            <small class="notification-time"><?= time_ago($notif['created_at']) ?></small>
+                                        </a>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                    <?php if (count($unreadNotifications) > 5): ?>
+                                        <div style="text-align: center; padding: 12px; border-top: 1px solid #f0f4f8; color: #7f8c8d; font-size: 0.9em;">
+                                            <?= tf('notifications_and_others', ['count' => count($unreadNotifications) - 5]) ?>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <div class="notification-empty">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <p><?= t('notifications_empty') ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </li>
+                    
+                    <!-- Sélecteur de langue -->
+                    <li class="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle">
+                            <i class="fa-solid fa-globe"></i> <?= getCurrentLanguage() == 'fr' ? '🇫🇷' : '🇬🇧' ?> 
+                            <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu langue-menu">
+                            <button class="menu-close-btn" onclick="closeLangueMenu(event)" title="Fermer le menu">×</button>
+                            <li><a href="<?= langUrl($_SERVER['REQUEST_URI'], 'fr') ?>"><i class="fas fa-flag"></i> 🇫🇷 <?= t('french') ?></a></li>
+                            <li><a href="<?= langUrl($_SERVER['REQUEST_URI'], 'en') ?>"><i class="fas fa-flag"></i> 🇬🇧 <?= t('english') ?></a></li>
+                        </ul>
+                    </li>
+                    
+                    <?php if (hasPermission(ROLE_ADMIN)): ?>
+                    <li><a href="<?= BASE_URL ?>admin.php" class="nav-link"><i class="fa-solid fa-cog"></i> <?= t('administration') ?></a></li>
+                    <?php endif; ?>
+                    
+                    <li><a href="<?= BASE_URL ?>logout.php" class="logout-link nav-link" onclick="return confirm('<?= t('confirm_logout') ?>');"><i class="fa-solid fa-right-from-bracket"></i> <?= t('logout') ?></a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+    <script>
+    // Fonctions pour fermer les menus manuellement
+    function closeBurgerMenu() {
+        const burger = document.getElementById('burgerMenu');
+        const navList = document.getElementById('mainNavList');
+        navList.classList.remove('show');
+        burger.classList.remove('active');
+        burger.setAttribute('aria-expanded', 'false');
+    }
+    
+    function closeDossierMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+    
+    function closeGestionMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+    
+    function closeRapportsMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+    
+    function closeCommunicationMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+    
+    function closeLangueMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+
+    function closeAideMenu(event) {
+        event.stopPropagation();
+        const menu = event.target.closest('.dropdown-menu');
+        if (window.innerWidth <= 800) {
+            menu.style.opacity = '0';
+            setTimeout(() => {
+                menu.style.display = 'none';
+            }, 150);
+        } else {
+            menu.style.display = 'none';
+            menu.style.opacity = '0';
+            menu.style.transform = 'translateX(-50%) translateY(-10px)';
+        }
+    }
+
+    // Menu burger mobile modernisé
+    const burger = document.getElementById('burgerMenu');
+    const navList = document.getElementById('mainNavList');
+    
+    function toggleBurgerMenu() {
+        navList.classList.toggle('show');
+        burger.classList.toggle('active');
+        
+        // Gestion de l'aria-expanded pour l'accessibilité
+        const isExpanded = navList.classList.contains('show');
+        burger.setAttribute('aria-expanded', isExpanded);
+    }
+    
+    burger.addEventListener('click', toggleBurgerMenu);
+    
+    burger.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleBurgerMenu();
+        }
+    });
+
+    // Fermeture automatique désactivée - les menus restent ouverts
+    // Les utilisateurs devront cliquer sur les boutons pour fermer les menus
+    document.addEventListener('click', function(e) {
+        // Code de fermeture automatique désactivé
+        // Les menus ne se ferment plus automatiquement quand on clique ailleurs
+        
+        // Seule exception : fermer le dropdown de notifications si on clique sur un lien de notification
+        if (e.target.closest('.notification-item')) {
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            // Fermer après un délai pour permettre la navigation
+            setTimeout(() => {
+                notificationDropdown.classList.remove('show');
+            }, 500);
+        }
+    });
+
+    // Gestion améliorée des menus déroulants sur mobile
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            if (window.innerWidth <= 800) {
+                e.preventDefault();
+                const dropdown = this.nextElementSibling;
+                const isVisible = dropdown.style.display === 'block';
+                
+                // Fermer tous les autres dropdowns avec animation
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    if (menu !== dropdown) {
+                        menu.style.display = 'none';
+                        menu.style.opacity = '0';
+                    }
+                });
+                
+                // Toggle le dropdown actuel avec animation
+                if (isVisible) {
+                    dropdown.style.opacity = '0';
+                    setTimeout(() => {
+                        dropdown.style.display = 'none';
+                    }, 150);
+                } else {
+                    dropdown.style.display = 'block';
+                    setTimeout(() => {
+                        dropdown.style.opacity = '1';
+                    }, 10);
+                }
+            }
+        });
+    });
+
+    // Système de notifications modernisé
+    const notificationBell = document.getElementById('notificationBell');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    
+    notificationBell.addEventListener('click', function(e) {
+        e.preventDefault();
+        notificationDropdown.classList.toggle('show');
+        
+        // Animation du badge avec effet plus subtil
+        const badge = this.querySelector('.notification-badge');
+        if (badge) {
+            badge.style.animation = 'none';
+            badge.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                badge.style.animation = 'pulse 2s infinite';
+                badge.style.transform = 'scale(1)';
+            }, 200);
+        }
+        
+        // Marquer visuellement que les notifications ont été vues
+        if (notificationDropdown.classList.contains('show')) {
+            setTimeout(() => {
+                const notificationItems = notificationDropdown.querySelectorAll('.notification-item');
+                notificationItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.transform = 'translateX(2px)';
+                        setTimeout(() => {
+                            item.style.transform = 'translateX(0)';
+                        }, 150);
+                    }, index * 50);
+                });
+            }, 100);
+        }
+    });
+
+    // Marquer les notifications comme lues avec feedback amélioré
+    const notificationItems = document.querySelectorAll('.notification-item');
+    notificationItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const notificationId = this.getAttribute('data-id');
+            if (notificationId) {
+                // Feedback visuel immédiat
+                this.style.transform = 'scale(0.98)';
+                this.style.opacity = '0.7';
+                
+                // Marquer comme lu via AJAX
+                fetch('<?= BASE_URL ?>api/notifications/mark_as_read.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        notification_id: notificationId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Animation de réduction du badge
+                        const badge = document.querySelector('.notification-badge');
+                        if (badge) {
+                            let count = parseInt(badge.textContent);
+                            count--;
+                            if (count <= 0) {
+                                badge.style.animation = 'none';
+                                badge.style.transform = 'scale(0)';
+                                setTimeout(() => badge.remove(), 300);
+                            } else {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.style.animation = 'pulse 2s infinite';
+                            }
+                        }
+                        
+                        // Animation de confirmation
+                        this.style.background = 'linear-gradient(135deg, #ecfdf5, #d1fae5)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 150);
+                    } else {
+                        // Restaurer l'état en cas d'erreur
+                        this.style.transform = 'scale(1)';
+                        this.style.opacity = '1';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors du marquage de la notification:', error);
+                    // Restaurer l'état en cas d'erreur
+                    this.style.transform = 'scale(1)';
+                    this.style.opacity = '1';
+                });
+            }
+        });
+    });
+
+    // Smooth scroll amélioré pour les liens internes
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Effet de surbrillance temporaire
+                target.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.3)';
+                setTimeout(() => {
+                    target.style.boxShadow = '';
+                }, 2000);
+            }
+        });
+    });
+
+    // Mise à jour automatique intelligente du compteur de notifications
+    let notificationUpdateInterval;
+    
+    function updateNotificationCount() {
+        fetch('<?= BASE_URL ?>api/notifications/unread_count.php')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.querySelector('.notification-badge');
+                const bell = document.getElementById('notificationBell');
+                const currentCount = badge ? parseInt(badge.textContent) : 0;
+                
+                if (data.count > 0) {
+                    if (!badge) {
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'notification-badge';
+                        newBadge.textContent = data.count > 99 ? '99+' : data.count;
+                        newBadge.style.transform = 'scale(0)';
+                        bell.appendChild(newBadge);
+                        
+                        // Animation d'apparition
+                        setTimeout(() => {
+                            newBadge.style.transform = 'scale(1)';
+                        }, 100);
+                    } else if (data.count !== currentCount) {
+                        // Animation de changement de nombre
+                        badge.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            badge.textContent = data.count > 99 ? '99+' : data.count;
+                            badge.style.transform = 'scale(1)';
+                        }, 150);
+                    }
+                } else if (badge) {
+                    badge.style.transform = 'scale(0)';
+                    setTimeout(() => badge.remove(), 300);
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour du compteur:', error);
+            });
+    }
+    
+    // Démarrer la mise à jour automatique (toutes les 30 secondes)
+    notificationUpdateInterval = setInterval(updateNotificationCount, 30000);
+    
+    // Pause quand la page n'est pas visible pour économiser les ressources
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            clearInterval(notificationUpdateInterval);
+        } else {
+            notificationUpdateInterval = setInterval(updateNotificationCount, 30000);
+            // Mise à jour immédiate au retour de focus
+            updateNotificationCount();
+        }
+    });
+    
+    // Animation d'entrée pour le header
+    document.addEventListener('DOMContentLoaded', function() {
+        const header = document.querySelector('.app-header');
+        header.style.transform = 'translateY(-100%)';
+        setTimeout(() => {
+            header.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            header.style.transform = 'translateY(0)';
+        }, 100);
+    });
+    </script>
+    <script src="<?= BASE_URL ?>assets/js/access_control.js?v=1"></script>
